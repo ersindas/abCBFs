@@ -126,8 +126,8 @@ class ASIF(Constraint):
 
         # safety constraint
         self.kappa = 10.0
-        self.px_min = 1.0    # vertical wall p_x >= 1 (active, the x-axis crash)
-        self.pz_min = 1.0    # floor p_z >= 1 (stays active too)
+        self.px_min = 1.0    # wall, the active constraint in this demo
+        self.pz_min = 1.0    # floor
         self.theta_max = np.deg2rad(60)
 
         # backup constraints
@@ -143,8 +143,8 @@ class ASIF(Constraint):
         self.con_stride = 3
 
         # flow-error-bound envelope
-        self.flow_V = 12.0                     # |v_x|, |v_z| envelope
-        self.flow_Om = 6.0                     # |omega| envelope (closed-loop is ~4.2)
+        self.flow_V = 12.0
+        self.flow_Om = 6.0    # margin above the closed-loop |omega| (~4.2)
         self._flow_ready = False
         self._env_warned = False
 
@@ -245,26 +245,9 @@ class ASIF(Constraint):
     #                     flow-error-bound constants                         #
     # ====================================================================== #
     def _compute_flow_constants(self):
-        """
-        Constants for the eps(tau,x,t) tightening, evaluated once over the
-        operating envelope (theta in Theta, |th|<=theta_max, |vx|,|vz|<=flow_V,
-        |om|<=flow_Om), all certified in one weighted norm ||.||_T = ||T.||_2
-        used consistently for L_b, L_h, L_hb and (via dynamics.py's d_b_jax)
-        for d_b/delta_max/Xi/Q too:
-          - T = diag(1,1,1,eps_v,eps_v,1): only v_x,v_z rescaled. grad h and
-            grad h_b for the interior constraint have zero support on v_x,v_z,
-            so this weighting shrinks L_b (by suppressing the v_x,v_z <- theta
-            coupling in f_b's jacobian) while leaving L_h exactly unpenalized.
-            (a broader weighting touching theta,omega,px,pz was tried and
-            reverted -- it blew up L_h, L_hb by ~1e4x for a much smaller L_b
-            gain. this v_x,v_z-only weighting is the net win: L_b drops ~2.7x
-            with only a mild rise in L_hb.)
-          - eps_v picked by a 1-D search minimizing the resulting L_b.
-          - L_h, L_hb = sup_z ||grad h(z) . T^-1||_2, ||grad h_b(z) . T^-1||_2.
-        delta_max is evaluated along the actual estimated flow inside the
-        augmented rollout using this same T, so eps and its x-gradient are
-        genuine functions of x, consistently in ||.||_T throughout.
-        """
+        # L_b, L_h, L_hb for the eps(tau,x,t) tightening, all certified in the
+        # same weighted norm ||.||_T = diag(1,1,1,eps_v,eps_v,1), eps_v chosen
+        # by a 1-D search that minimizes L_b
         g0, m0, J0 = self.g0, self.m0, self.J0
         kth = self.backupParams["Kp_th"]
         kw = self.backupParams["Kd_th"]
@@ -360,11 +343,8 @@ class ASIF(Constraint):
     #                      robust adaptive bCBF-QP                            #
     # ====================================================================== #
     def adaptive_bCBF(self, x, u_des):
-        # robust adaptive bCBF-QP: uses the current theta_hat/rho from the
-        # DREM estimator to (a) propagate the estimated backup flow with
-        # sensitivities, (b) tighten each flow-point constraint by
-        # eps = L * delta_max(tau), and (c) robustify against the parametric
-        # uncertainty in the current dynamics
+        # propagate the estimated flow, tighten each constraint by eps = L*delta_max,
+        # then robustify against the current parametric uncertainty
         if not self._flow_ready:
             self._compute_flow_constants()
         self._envelope_check(x)
@@ -380,9 +360,6 @@ class ASIF(Constraint):
         n = self.n_steps_b
         dtau = self.dtau
 
-        # estimated backup flow + sensitivities, plus the (x,t)-dependent
-        # Gronwall bound delta_max(tau,x,t) and its sensitivities
-        # Xi = d(delta_max)/dx, Q = d(delta_max)/dt (warm up jit on first call)
         if not getattr(self, "_adapt_warmed", False):
             _ = self.adaptiveBackupFlow(
                 x, theta_hat, rho, rho_dot, self.flow_Lb, self.flow_T, n, dtau

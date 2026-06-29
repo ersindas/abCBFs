@@ -5,8 +5,7 @@ class Estimator:
     def setupEstimator(self):
 
         # theta = [c_x, c_z, delta_g, delta_m, delta_J, delta_l]
-        # delta_g, delta_m are widened so the true mismatch (0.22, -0.32) sits inside,
-        # neither enters the pitch LMI so checkValidBackup still passes
+        # delta_g, delta_m widened so the true mismatch (0.22, -0.32) sits inside
         self.theta_hat_low = np.array([-.1, -.1, -.25, -.35, -.01, -.005])
         self.theta_hat_high = np.array([.1, .1, .25, .35, .01, .005])
         self.n_theta = 6

@@ -97,19 +97,8 @@ def d_b_jax(z, rho, Tmat, F_max, M_max, backupParams, smooth_s):
 
 def _adaptive_rollout(x0, theta_hat, rho, rho_dot, Lb, Tmat, n_steps, dtau,
                        fb, fb_jac, psi_fn, db_fn, db_grad_z_fn, lenx):
-    """
-    fixed-step RK4 rollout of the augmented system
-        z'     = f_b(z, theta_hat)
-        Phi'   = J(z) Phi,                       Phi(0)   = I    state sensitivity
-        Gamma' = J(z) Gamma + psi(z),             Gamma(0) = 0    estimate sensitivity
-        delta' = Lb delta + d_b(z,rho),           delta(0) = 0    Gronwall bound, in ||.||_T
-        Xi'    = Lb Xi + (d d_b/dz)(z,rho) Phi,   Xi(0)    = 0    = d delta/dx
-        Q'     = Lb Q + d_b(z,rho_dot),           Q(0)     = 0    = d delta/dt
-
-    Lb must be the log-norm of f_b's Jacobian in the same ||.||_T (mu(Tmat @ Jcl @
-    Tmat^-1)); d_b uses Tmat-weighted column norms to match, so delta_max bounds
-    ||e(tau)||_T = ||Tmat e(tau)||_2 consistently throughout.
-    """
+    # RK4 rollout of z, Phi, Gamma plus the Gronwall bound delta and its
+    # sensitivities Xi, Q, all in ||.||_T
     def aug_rhs(carry):
         z, Phi, Gam, delta, Xi, Q = carry
         J = fb_jac(z, theta_hat)
@@ -174,10 +163,8 @@ class Dynamics:
         self.delta_m = -0.32   # heavy: true mass m = 1/(1/m0 + delta_m) = 1.47 kg
         self.delta_J = 0.008
         self.delta_l = 0.003
-        # true theta sits well inside the estimator box (delta_m is 91% of the
-        # box half-width); weakens vertical thrust authority ~2.8x vs nominal,
-        # which is why the vanilla bCBF crashes through the floor but the
-        # robust-adaptive one doesn't
+        # delta_m weakens vertical thrust authority ~2.8x vs nominal -- this is
+        # why the vanilla bCBF crashes through the floor but the adaptive one doesn't
         self.bTheta = np.array([self.c_x, self.c_z, self.delta_g, self.delta_m, self.delta_J, self.delta_l])
 
         self.int_options = {"rtol": 1e-6, "atol": 1e-6}
@@ -186,8 +173,8 @@ class Dynamics:
         self.total_steps = int(4.0 / self.del_t) + 1
         self.curr_step = 0
 
-        # [x, z, theta, xdot, zdot, thetadot] -- start descending fast toward
-        # the wall/floor corner so the floor constraint stays active
+        # [x, z, theta, xdot, zdot, thetadot] -- descending fast toward the
+        # wall/floor corner so the floor constraint stays active
         self.x0 = np.array([7.0, 3.0, 0.0, -7.5, -0.8, 0.0])
         self.lenx = len(self.x0)
 

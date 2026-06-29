@@ -32,7 +32,7 @@ class Control:
             "Kd_th": 2 * zeta * wth,
         }
 
-        # backup pitch gains k_theta, k_omega -- critically damped, omega_n ~ 4 rad/s
+        # critically damped, omega_n ~ 4 rad/s
         self.backupParams = {
             "th_r": np.deg2rad(25),
             "Kp_th": 4.0,
@@ -72,8 +72,7 @@ class Control:
         return u_des
 
     def checkValidBackup(self):
-        # checks the backup-controller design conditions: vertex LMIs,
-        # anti-saturation, invariance, vertical-thrust, backup subset of safe set
+        # vertex LMIs, anti-saturation, invariance, vertical-thrust, backup subset of safe set
         kth = self.backupParams["Kp_th"]
         kw = self.backupParams["Kd_th"]
         self.th_r = self.backupParams["th_r"]
@@ -108,7 +107,7 @@ class Control:
             print("Skipped backup set and controller check. The backup controller is not verified!")
             return
 
-        # Assumption 1: parameters can't flip the sign of effective mass/inertia
+        # Assumption 1: a_m, a_J must stay positive over the parameter box
         if not (a_m_low > 0 and a_j_low > 0):
             raise Exception("Parameter bounds allow a_m <= 0 or a_J <= 0.")
 

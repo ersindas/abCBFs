@@ -30,8 +30,6 @@ class Simulation(ASIF, Control, Dynamics, Estimator):
         self.checkValidBackup()
 
     def sim(self):
-        # simulate the trajectory with point-wise safety filtering; when
-        # robust_flag is set the DREM estimator also runs online
         x0 = self.x0
         total_steps = self.total_steps
         lenx = self.lenx
@@ -45,7 +43,7 @@ class Simulation(ASIF, Control, Dynamics, Estimator):
         x_full[:, 0] = x0
         x_curr = x0
 
-        # estimator histories (only meaningful when robust_flag is True)
+        # only meaningful when robust_flag is True
         self.theta_hat_hist = np.zeros((self.n_theta, total_steps))
         self.rho_hist = np.zeros((self.n_theta, total_steps))
         self.maxratio_hist = np.zeros(total_steps)
