@@ -49,14 +49,15 @@ C_BCBF, C_ADA, C_EST = "#0e7490", "#6c3a8e", "#1f9d55"
 C_PRI = "#34495e"
 C_CONSTRAINT = "#555555"
 C_GOAL = "#b9770e"
-UNSAFE, SAFE = "#f7d4cf", "#ffffff"
+C_DRONE = "#c2185b"   # drone-snapshot icons, one dominant color
+UNSAFE, SAFE = "#fbe6e2", "#e3f2fd"
 
 fig = plt.figure(figsize=(8.5, 8.6), constrained_layout=True)
 fig.set_constrained_layout_pads(hspace=0.06, wspace=0.04)
 gs = fig.add_gridspec(3, 2, height_ratios=[1.8, 0.5, 1.0])
 
 
-def draw_quad(ax, x, z, theta, L=0.22, col="#17202a"):
+def draw_quad(ax, x, z, theta, L=0.22, col=C_DRONE):
     a = np.array([np.cos(theta), -np.sin(theta)])
     tdir = np.array([np.sin(theta), np.cos(theta)])
     p = np.array([x, z]); p1, p2 = p - L * a, p + L * a
@@ -108,8 +109,8 @@ ax.plot(xv_t[0, -1], xv_t[1, -1], "x", color=C_BCBF, ms=9, mew=2.4, zorder=7)
 ax.plot(xa_t[0], xa_t[1], color=C_ADA, lw=2.3, zorder=5, label="robust adaptive bCBF")
 for tt in [0.0, 0.30, 0.60, 0.90, 1.15, 1.35]:
     k = min(int(tt / dt), ka - 1)
-    draw_quad(ax, xa[0, k], xa[1, k], xa[2, k], col=C_ADA)
-draw_quad(ax, xa[0, -1], xa[1, -1], xa[2, -1], col=C_ADA)
+    draw_quad(ax, xa[0, k], xa[1, k], xa[2, k])
+draw_quad(ax, xa[0, -1], xa[1, -1], xa[2, -1])
 ax.plot(xa[0, 0], xa[1, 0], "o", color="k", ms=4, zorder=TXT_Z)
 ax.annotate(r"$t=0$", (xa[0, 0], xa[1, 0]), xytext=(2, 9 + 1.0 * 72 / 25.4),
             textcoords="offset points", fontsize=14, ha="center", zorder=TXT_Z)
