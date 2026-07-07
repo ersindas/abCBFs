@@ -144,11 +144,11 @@ class Control:
         ) ** 2
         cond5 = self.rho_th >= rho_min
         if not cond5:
-            raise Exception("Invariance condition (33) not met.")
+            raise Exception("Invariance condition (43) not met.")
 
         cond_vert = a_m_low * self.F_max * np.cos(self.th_bar) - self.g0 - dg_high >= 0
         if not cond_vert:
-            raise Exception("Vertical thrust condition (34) not met.")
+            raise Exception("Vertical thrust condition (44) not met.")
 
         cond6 = (
             np.exp(-self.kappa * self.r_x)
@@ -157,7 +157,7 @@ class Control:
             <= 1
         )
         if not cond6:
-            raise Exception("Backup set is not a subset of the safe set (35).")
+            raise Exception("Backup set is not a subset of the safe set (45).")
 
         rho_max = min(
             self.th_r**2 / (e1 @ Pinv @ e1),

@@ -52,9 +52,9 @@ C_GOAL = "#b9770e"
 C_DRONE = "#c2185b"   # drone-snapshot icons, one dominant color
 UNSAFE, SAFE = "#fbe6e2", "#e3f2fd"
 
-fig = plt.figure(figsize=(8.5, 8.6), constrained_layout=True)
+fig = plt.figure(figsize=(8.5, 7.0), constrained_layout=True)
 fig.set_constrained_layout_pads(hspace=0.06, wspace=0.04)
-gs = fig.add_gridspec(3, 2, height_ratios=[1.8, 0.5, 1.0])
+gs = fig.add_gridspec(3, 2, height_ratios=[1.6, 0.42, 0.85])
 
 
 def draw_quad(ax, x, z, theta, L=0.22, col=C_DRONE):
@@ -71,8 +71,7 @@ def draw_quad(ax, x, z, theta, L=0.22, col=C_DRONE):
 
 # ----------------------- top: x-z plane, wall on the left -------------------
 ax = fig.add_subplot(gs[0, :])
-xlo, xhi, zlo, zhi = 0.0, 7.4, 0.0, 3.5
-unsafe_x = 0.5 * (xlo + wall)
+xlo, xhi, zlo, zhi = 0.5, 7.4, 0.5, 3.5
 ax.set_facecolor(UNSAFE)
 ax.add_patch(Rectangle((wall, floor), xhi - wall, zhi - floor,
                         facecolor=SAFE, edgecolor="none", zorder=0.5))
@@ -80,14 +79,14 @@ ax.vlines(wall, floor, zhi, color=C_CONSTRAINT, lw=1.6, zorder=2)
 ax.hlines(floor, wall, xhi, color=C_CONSTRAINT, lw=1.6, zorder=2)
 TXT_Z = 10   # keep all top-panel text above the trajectories
 up_05mm = mtransforms.ScaledTranslation(0, 1.0 / 25.4, fig.dpi_scale_trans)
-ax.text(wall + 0.06, zhi - 0.06, r"$p_{x,\rm min}$", color=C_CONSTRAINT,
+ax.text(wall + 0.06, zhi - 0.06, r"$p_x^{{\rm min}}$", color=C_CONSTRAINT,
         ha="left", va="top", fontsize=17, zorder=TXT_Z,
         transform=ax.transData + up_05mm)
-ax.text(3.0, floor + 0.07, r"$p_{z,\rm min}$", color=C_CONSTRAINT,
+ax.text(3.0, floor + 0.07, r"$p_z^{{\rm min}}$", color=C_CONSTRAINT,
         ha="left", va="bottom", fontsize=17, zorder=TXT_Z)
-ax.text(unsafe_x, 2.55, "unsafe", color=C_CONSTRAINT, fontsize=15, ha="center", zorder=TXT_Z)
-ax.text(6.0, 2.45, "safe", color=C_CONSTRAINT, fontsize=15, ha="center", zorder=TXT_Z)
-ax.text(6.0, 2.05, r"$\mathcal{C}_{\rm S}$", color=C_CONSTRAINT, fontsize=15, ha="center", zorder=TXT_Z)
+ax.text(3.5, 0.75, "unsafe", color=C_CONSTRAINT, fontsize=15, ha="center", zorder=TXT_Z)
+ax.text(6.4, 2.44, "safe set", color=C_CONSTRAINT, fontsize=15, ha="center", zorder=TXT_Z)
+ax.text(6.4, 2.18, r"$\mathcal{C}_{\rm S}$", color=C_CONSTRAINT, fontsize=15, ha="center", zorder=TXT_Z)
 
 ax.plot(xg, zg, marker="*", ms=14, color=C_GOAL,
         markeredgecolor="k", markeredgewidth=0.5, zorder=TXT_Z)
@@ -118,9 +117,10 @@ ax.plot(xa[0, -1], xa[1, -1], "o", color="k", ms=4, zorder=TXT_Z)
 ax.annotate(rf"$t={t_a[-1]:.0f}$", (xa[0, -1], xa[1, -1]), xytext=(26, 4),
             textcoords="offset points", fontsize=14, ha="left", zorder=TXT_Z)
 
-ax.set_xlim(xlo, xhi); ax.set_ylim(zlo, zhi); ax.set_aspect("equal")
+ax.set_xlim(xlo, xhi); ax.set_ylim(zlo, zhi)
+ax.xaxis.set_major_locator(MultipleLocator(1.0))
 ax.yaxis.set_major_locator(MultipleLocator(1.0))
-ax.set_xlabel(r"$p_x$ [m]"); ax.set_ylabel(r"$p_z$ [m]")
+ax.set_xlabel(r"position, $p_x$ (m)"); ax.set_ylabel(r"position, $p_z$ (m)")
 ax.legend(loc="lower right", framealpha=0.95, handlelength=1.6)
 
 # ----------------------- row 2: control inputs -------------------------------
@@ -129,7 +129,7 @@ for lev in (Fmax, -Mmax, Mmax, 0):
     ax.axhline(lev, color="0.55", lw=0.8, ls=":")
 ax.plot(t_a, uaa[0], color="#d35400", lw=1.7, label=r"$F$")
 ax.plot(t_a, uaa[1], color="#2471a3", lw=1.7, label=r"$M$")
-ax.set_xlabel(r"time [s]"); ax.set_ylabel(r"$u$")
+ax.set_xlabel(r"time (s)"); ax.set_ylabel(r"$u$")
 ax.set_ylim(-Mmax - 3, Fmax + 3)
 ax.set_xlim(t_a[0], t_a[-1])
 ax.xaxis.set_major_locator(MultipleLocator(1.0))
@@ -146,9 +146,11 @@ ax = fig.add_subplot(gs[2, 0])
 for i in (0, 2, 3):                        # c_x, delta_g, delta_m
     ax.plot(t_a[mask], th[i][mask], color=cols[i], lw=1.8, label=labels[i], zorder=3)
     ax.axhline(bT[i], color=cols[i], lw=1.0, ls=":", zorder=2)
-ax.set_xlabel(r"time [s]"); ax.set_ylabel(r"$\hat{\theta}_i$")
+ax.set_xlabel(r"time (s)"); ax.set_ylabel(r"$\hat{\theta}_i$")
 ax.set_xlim(0, tmax)
+ax.set_ylim(-0.36, 0.26)
 ax.xaxis.set_major_locator(MultipleLocator(0.5))
+ax.yaxis.set_major_locator(MultipleLocator(0.2))
 ax.legend(loc="center", bbox_to_anchor=(0.75, -0.12), bbox_transform=ax.transData,
           ncol=3, frameon=False)
 
@@ -159,10 +161,11 @@ ax = fig.add_subplot(gs[2, 1])
 for i in (1, 4, 5):                        # c_z, delta_J, delta_l
     ax.plot(t_a[mask], th[i][mask], color=cols[i], lw=1.8, label=labels[i], zorder=3)
     ax.axhline(bT[i], color=cols[i], lw=1.0, ls=":", zorder=2)
-ax.set_xlabel(r"time [s]")                 # y-label omitted, same quantity as left panel
+ax.set_xlabel(r"time (s)")                 # y-label omitted, same quantity as left panel
 ax.set_xlim(0, tmax)
+ax.set_ylim(-0.008, 0.092)
 ax.xaxis.set_major_locator(MultipleLocator(0.5))
-ax.yaxis.set_major_locator(MultipleLocator(0.02))
+ax.yaxis.set_major_locator(MultipleLocator(0.04))
 ax.yaxis.set_major_formatter(FormatStrFormatter("%.2f"))
 ax.legend(loc="center", bbox_to_anchor=(0.75, 0.045), bbox_transform=ax.transData,
           ncol=3, frameon=False)

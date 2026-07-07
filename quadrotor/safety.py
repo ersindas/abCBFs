@@ -362,12 +362,14 @@ class ASIF(Constraint):
 
         if not getattr(self, "_adapt_warmed", False):
             _ = self.adaptiveBackupFlow(
-                x, theta_hat, rho, rho_dot, self.flow_Lb, self.flow_T, n, dtau
+                x, theta_hat, rho, rho_dot, theta_hat_dot,
+                self.flow_Lb, self.flow_T, n, dtau
             )
             self._adapt_warmed = True
         tic = time.perf_counter()
         zs, Phis, Gams, deltas, Xis, Qs = self.adaptiveBackupFlow(
-            x, theta_hat, rho, rho_dot, self.flow_Lb, self.flow_T, n, dtau
+            x, theta_hat, rho, rho_dot, theta_hat_dot,
+            self.flow_Lb, self.flow_T, n, dtau
         )
         flowComputeTime = time.perf_counter() - tic
 

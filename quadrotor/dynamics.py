@@ -95,7 +95,8 @@ def d_b_jax(z, rho, Tmat, F_max, M_max, backupParams, smooth_s):
     # d_b(z,rho) = sum_i ||T psi_b,i(z)||_{2,s} rho_i, in ||.||_T (Tmat=I -> plain norm)
     return jnp.sum(rho * _smooth_col_norms(z, F_max, M_max, backupParams, smooth_s, Tmat))
 
-def _adaptive_rollout(x0, theta_hat, rho, rho_dot, Lb, Tmat, n_steps, dtau,
+def _adaptive_rollout(x0, theta_hat, rho, rho_dot, theta_hat_dot, Lb, Tmat,
+                       n_steps, dtau,
                        fb, fb_jac, psi_fn, db_fn, db_grad_z_fn, lenx):
     # RK4 rollout of z, Phi, Gamma plus the Gronwall bound delta and its
     # sensitivities Xi, Q, all in ||.||_T
@@ -103,8 +104,9 @@ def _adaptive_rollout(x0, theta_hat, rho, rho_dot, Lb, Tmat, n_steps, dtau,
         z, Phi, Gam, delta, Xi, Q = carry
         J = fb_jac(z, theta_hat)
         db = db_fn(z, rho, Tmat)
-        db_rate = db_fn(z, rho_dot, Tmat)
         dgrad = db_grad_z_fn(z, rho, Tmat)
+        # db depends on t through rho(t) and theta_hat(t) (via z)
+        db_rate = db_fn(z, rho_dot, Tmat) + dgrad @ (Gam @ theta_hat_dot)
         return (
             fb(z, theta_hat),
             J @ Phi,
@@ -231,14 +233,16 @@ class Dynamics:
             static_argnames=("n_steps",),
         )
 
-    def adaptiveBackupFlow(self, x, theta_hat, rho, rho_dot, Lb, Tmat, n_steps, dtau):
+    def adaptiveBackupFlow(self, x, theta_hat, rho, rho_dot, theta_hat_dot,
+                           Lb, Tmat, n_steps, dtau):
         # estimated backup flow with sensitivities, plus the (x,t)-dependent
         # Gronwall bound delta_max and its sensitivities Xi = d(delta_max)/dx,
         # Q = d(delta_max)/dt, all consistent in the weighted norm ||.||_T
         # (Tmat=I recovers the plain euclidean norm)
         zs, Phis, Gams, deltas, Xis, Qs = self._adaptive_rollout_jit(
             jnp.asarray(x), jnp.asarray(theta_hat), jnp.asarray(rho),
-            jnp.asarray(rho_dot), float(Lb), jnp.asarray(Tmat),
+            jnp.asarray(rho_dot), jnp.asarray(theta_hat_dot),
+            float(Lb), jnp.asarray(Tmat),
             n_steps=n_steps, dtau=dtau,
         )
         return (np.asarray(zs), np.asarray(Phis), np.asarray(Gams),
