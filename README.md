@@ -4,6 +4,8 @@ This repository contains the implementation of **Robust Adaptive Backup Control 
 
 Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Burdick
 
+Paper: https://arxiv.org/pdf/2607.20842
+
 ## Prerequisites
 
 - Python 3.9 or later.
