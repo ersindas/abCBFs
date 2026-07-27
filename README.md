@@ -27,4 +27,4 @@ The `quadrotor` folder contains the planar quadrotor example from the paper: the
 
 ## Supplementary material
 
-The journal version of the paper has a page limit, so the proof that the backup controller keeps the backup set forward invariant (Proposition 1) was moved out of the paper and put here instead: see `SUPPLEMENTARY.md`. The same conditions are checked numerically in `quadrotor/control.py`, in `checkValidBackup`.
+The journal version of the paper has a page limit, so the proof that the backup controller keeps the backup set forward invariant (Proposition 1) was moved out of the paper and put here instead: see `Supplementary Material.pdf`. The same conditions are checked numerically in `quadrotor/control.py`, in `checkValidBackup`.
