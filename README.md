@@ -24,3 +24,7 @@ The `quadrotor` folder contains the planar quadrotor example from the paper: the
 - `main_sim.py` runs a single simulation (vanilla, adaptive, or nominal, see `--mode`).
 - `collect_data.py` runs all three cases and saves the data used for the paper figure.
 - `make_fig.py` generates the figure from the saved data.
+
+## Supplementary material
+
+The journal version of the paper has a page limit, so the proof that the backup controller keeps the backup set forward invariant (Proposition 1) was moved out of the paper and put here instead: see `SUPPLEMENTARY.md`. The same conditions are checked numerically in `quadrotor/control.py`, in `checkValidBackup`.
