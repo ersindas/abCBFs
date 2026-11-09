@@ -47,11 +47,6 @@ MIXING_RANK_FULL = 1e-08
 MIXING_DETERMINANT_SCALE = 1e-12
 
 def estimator_rates(Me, Ye, that, rho, gamma):
-    """Normalized DREM rates with a smooth numerical rank gate.
-
-    The same nonnegative gate multiplies both rates so a rank-deficient
-    regression does not contract the error bound.
-    """
     matrix = (np.asarray(Me) + np.asarray(Me).T) / 2
     matrix_scale = np.hypot(np.linalg.norm(matrix, 'fro'), 1e-12)
     scaled_matrix = matrix / matrix_scale
