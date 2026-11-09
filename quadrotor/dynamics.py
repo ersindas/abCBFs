@@ -63,17 +63,14 @@ def fb_vanilla(
 class Dynamics:
     def setupDynamics(self):
 
-        # nominal constants
-        self.g0 = 9.81  # [m/s^2]
-        self.m0 = 1  # [kg]
-        self.J0 = 0.25  # [kgm^2]
+        self.g0 = 9.81
+        self.m0 = 1
+        self.J0 = 0.25
         self.Jinv = 1 / self.J0
 
-        # true parameters (inside Theta of the estimator)
-        # theta = [c_x, c_z, delta_g, delta_m, delta_J, delta_l]
         self.c_x = 0.08
         self.c_z = 0.08
-        self.delta_g = 0.22    # extra specific gravity the nominal model ignores
+        self.delta_g = 0.22
         self.delta_m = -0.37
         self.delta_J = 0.008
         self.delta_l = 0.003
@@ -81,7 +78,7 @@ class Dynamics:
 
         self.int_options = {"rtol": 1e-6, "atol": 1e-6}
 
-        self.del_t = 0.01  # [s]
+        self.del_t = 0.01
         self.curr_step = 0
 
         self.x0 = np.array([7.0, 3.0, 0.0, -7.5, -0.8, 0.0])
@@ -123,14 +120,12 @@ class Dynamics:
         return g
 
     def f_x_hat(self, x, theta_hat):
-        # estimated drift f(x) + F(x) theta_f_hat
         f = self.f_x_nominal(x)
         f[3] += -theta_hat[0] * x[3]
         f[4] += -theta_hat[1] * x[4] - theta_hat[2]
         return f
 
     def g_x_hat(self, x, theta_hat):
-        # estimated actuation matrix g(x) + sum_j theta_g_hat_j G_j(x)
         am_hat = 1 / self.m0 + theta_hat[3]
         aJ_hat = 1 / self.J0 + theta_hat[4]
         g = np.zeros((self.lenx, 2))
@@ -143,10 +138,8 @@ class Dynamics:
         )
         return g
 
-    ###################### backup #########################
 
     def propMainBackup_vanilla_jax(self, t, x):
-        # propagation function for backup dynamics + STM
         dx = self._dx_backup
         dx[: self.lenx] = self.jit_fb_vanilla(x[: self.lenx])
 
@@ -158,10 +151,8 @@ class Dynamics:
 
         return dx
 
-    ###################### main sim #########################
 
     def propState(self, t, x, u):
-        # true dynamics, x = [px pz theta vx vz omega]
         dx = np.zeros_like(x)
         dx[0:3] = x[3:]
         dx[3] = (np.sin(x[2])/self.m0)*u[0] - self.c_x*x[3] + self.delta_m*np.sin(x[2])*u[0]
