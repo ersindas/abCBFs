@@ -1,5 +1,3 @@
-"""Explicit lifted robust QP, with no objective penalty on dual variables."""
-
 import time
 import numpy as np
 from scipy import sparse
@@ -7,9 +5,6 @@ import clarabel
 
 
 def error_polytope(theta_hat, rho, theta_low, theta_high):
-    """Return the manuscript's symmetric 2N-row certified error box.
-
-    """
     theta_hat, rho, theta_low, theta_high = map(
         lambda v: np.asarray(v, dtype=float),
         (theta_hat, rho, theta_low, theta_high),
@@ -25,23 +20,12 @@ def error_polytope(theta_hat, rho, theta_low, theta_high):
 
 
 def box_minimum(c, lower, upper):
-    """Exact support minimum, used only for independent solution checks."""
     c = np.asarray(c, dtype=float)
     return np.sum(np.minimum(c * lower, c * upper), axis=-1)
 
 
 def solve_lifted_qp(a0, au, c0, cu, A, b, u_low, u_high, u_des,
                     *, tolerance=1e-9, check_tolerance=1e-6):
-    """Solve min ||u-u_des||^2 over w=(u, mu_0,...,mu_G-1).
-
-    Each group imposes a0+au*u+b.T*mu>=0, A.T*mu=c0+cu*u,
-    and mu<=0. Clarabel's internal slack representation is only the exact
-    conic encoding of these inequalities; no relaxed safety constraint or
-    extra objective regularization is introduced.
-
-    A failed solve returns success=False. Only classification
-    'primal_infeasible' includes a checked numerical Farkas certificate.
-    """
     tic = time.perf_counter()
     a0, au, c0, cu, A, b, u_low, u_high, u_des = map(
         lambda v: np.asarray(v, dtype=float),
@@ -81,9 +65,6 @@ def solve_lifted_qp(a0, au, c0, cu, A, b, u_low, u_high, u_des,
                             barriers), format="csc")
     conic_b = np.concatenate((c0.ravel(), u_high, -u_low,
                               np.zeros(ndual), a0))
-    # Positive row scaling changes neither w nor the feasible set. In
-    # particular, large cubic-alpha constants otherwise dominate the
-    # infeasibility certificate before its stationarity residual is small.
     row_norms = np.asarray(abs(conic_A).max(axis=1).toarray()).ravel()
     row_scale = 1.0/np.maximum.reduce((np.ones_like(conic_b),
                                      np.abs(conic_b), row_norms))
@@ -117,10 +98,6 @@ def solve_lifted_qp(a0, au, c0, cu, A, b, u_low, u_high, u_des,
     )
     result["assembly_time"] = time.perf_counter() - tic
     presolve_start = time.perf_counter()
-    # If zero error is admissible, each robust row requires a0+au*u>=0.
-    # A negative maximum over the input box has an explicit Farkas ray for
-    # the FULL lifted problem. This exact presolve neither changes the
-    # optimization problem nor interprets a numerical failure as infeasibility.
     if np.all(b >= 0):
         row_upper_bounds = a0 + np.sum(np.maximum(au*u_low, au*u_high), axis=1)
         g = int(np.argmin(row_upper_bounds))
@@ -172,8 +149,6 @@ def solve_lifted_qp(a0, au, c0, cu, A, b, u_low, u_high, u_des,
         objective_primal=sol.obj_val, objective_dual=sol.obj_val_dual,
     )
     if result["status"] == "PrimalInfeasible":
-        # A_scaled=S*A: the original-coordinate certificate is S*z_scaled.
-        # Primal variables, including every mu, are unchanged by row scaling.
         certificate = row_scale * np.asarray(sol.z, dtype=float)
         scale = max(1.0, np.linalg.norm(certificate, ord=np.inf))
         stationarity = np.max(np.abs(conic_A.T @ certificate))/scale
@@ -199,7 +174,6 @@ def solve_lifted_qp(a0, au, c0, cu, A, b, u_low, u_high, u_des,
     dual_barriers = a0 + au @ u + mu @ b
     input_violation = max(0.0, np.max(u_low-u), np.max(u-u_high))
     mu_violation = max(0.0, np.max(mu))
-    # Validate the dual solution against the symmetric box support minimum.
     if rows_per_dual != 2*n or not np.array_equal(
             A, np.vstack((np.eye(n), -np.eye(n)))):
         raise ValueError("Independent validation expects the two-block error box.")
