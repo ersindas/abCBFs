@@ -1,4 +1,3 @@
-"""Run the uncertain planar quadrotor example with the selected controller."""
 from pathlib import Path
 import argparse
 import numpy as np
@@ -50,7 +49,6 @@ def get_input(env, predictor, x, reserve=0.0):
     hbar, Jx, Jtheta, Jrho = map(np.asarray, (hbar, Jx, Jtheta, Jrho))
     fhat, ghat = (env.f_x_hat(x, env.theta_hat), env.g_x_hat(x, env.theta_hat))
     phi0, phiu = regression_coefficients(x)
-    # Numerical interior reserve; not a sampling certificate.
     target = hbar - reserve
     alpha = getattr(env, 'running_alpha_gain', 2.0) * target + target ** 3
     alpha[-1] = 10 * target[-1] + target[-1] ** 3
@@ -59,7 +57,6 @@ def get_input(env, predictor, x, reserve=0.0):
     c0 = Jx @ phi0
     cu = np.stack([Jx @ phiu[i] for i in range(2)], axis=2)
     A, b, _, _ = error_polytope(env.theta_hat, env.rho, env.theta_hat_low, env.theta_hat_high)
-    # Omit only the tau=0 derivative row.
     result = solve_lifted_qp(
         a0[1:], au[1:], c0[1:], cu[1:], A, b,
         np.array([0.0, -env.M_max]), np.array([env.F_max, env.M_max]),
@@ -121,7 +118,6 @@ def run_adaptive(
         use_qp = q['success'] and q['hbar'].min() >= 0.0
         if not q['success'] and q['classification'] != 'primal_infeasible':
             raise RuntimeError(f"Unresolved solver failure: {q['status']}")
-        # Initial membership check; future QP constraints remain active.
         if k == 0:
             if q['hbar'].min() <= reserve:
                 raise RuntimeError('Initial tightened-set check failed')
