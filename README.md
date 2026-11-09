@@ -12,7 +12,7 @@ Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Bu
 
 The `quadrotor` folder contains the planar quadrotor example from the paper: the true and estimated dynamics, the DREM parameter estimator, the nominal and robust adaptive bCBF-QP safety filters, and the scripts used to generate the figure and animation.
 
-Use Python 3.12. Install the packages, run the simulations, and generate the figure and animation:
+To install the packages, run the simulations, and generate the figure and animation:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -33,4 +33,4 @@ The simulation uses a 1 s backup horizon and a 10 ms sampling period.
 
 ## Supplementary material
 
-[Supplementary Material.pdf](Supplementary%20Material.pdf) gives the proof that the backup controller keeps the backup set forward invariant (Proposition 1). The same conditions are checked numerically in `quadrotor/control.py`, in `checkValidBackup`.
+[Supplementary Material.pdf](Supplementary%20Material.pdf) gives the proof that the backup controller renders the backup set forward invariant (Proposition 1). 
