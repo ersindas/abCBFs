@@ -1,4 +1,4 @@
-"""Save backup trajectories and radii used by the paper figure."""
+"""Save backup trajectories used for the main figure."""
 
 import argparse
 from pathlib import Path
