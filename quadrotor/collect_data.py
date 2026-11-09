@@ -1,4 +1,4 @@
-"""Run all three controllers and save the data for the figure."""
+"""Run all three controllers and save the simulation data."""
 from pathlib import Path
 import argparse
 import subprocess
@@ -17,10 +17,7 @@ def main():
         subprocess.run([sys.executable, str(HERE/'main_sim.py'), '--mode', mode,
                         '--output', str(output)], check=True)
 
-    subprocess.run([sys.executable, str(HERE / 'plotting/backup_flows.py'),
-                    '--data', str(output)], check=True)
     print(f'Saved simulation data to {output}')
-
 
 
 if __name__ == '__main__':
