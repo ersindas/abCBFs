@@ -5,8 +5,8 @@ import cvxpy as cp
 class Control:
     def setupControl(self):
 
-        self.F_max = 20.  # [N]
-        self.M_max = 20.  # [Nm]
+        self.F_max = 20.
+        self.M_max = 20.
 
         self.u_bounds = (
             (0, self.F_max),
@@ -15,7 +15,6 @@ class Control:
 
         self.thetad_max_p = np.deg2rad(80)
 
-        # primary control gains
         wx = 2
         wz = 2.4
         zeta = 1.0
@@ -32,7 +31,6 @@ class Control:
             "Kd_th": 2 * zeta * wth,
         }
 
-        # critically damped, omega_n ~ 4 rad/s
         self.backupParams = {
             "th_r": np.deg2rad(25),
             "Kp_th": 4.0,
@@ -64,7 +62,6 @@ class Control:
         F = self.m0 * np.sqrt(ax * ax + (self.g0 + az) * (self.g0 + az))
         F = np.clip(F, 0, self.F_max)
 
-        # inner-loop PD on pitch
         M = -self.J0 * (-Kp_th * (th - th_des) - Kd_th * thd)
         M = np.clip(M, -self.M_max, self.M_max)
 
@@ -72,7 +69,6 @@ class Control:
         return u_des
 
     def checkValidBackup(self):
-        # vertex LMIs, anti-saturation, invariance, vertical-thrust, backup subset of safe set
         kth = self.backupParams["Kp_th"]
         kw = self.backupParams["Kd_th"]
         self.th_r = self.backupParams["th_r"]
@@ -86,7 +82,6 @@ class Control:
         def A_th(a):
             return np.array([[0.0, 1.0], [-a * kth, -a * kw]])
 
-        # Q fixed at I -- letting the solver pick Q drives it to its lower bound
         n = 2
         P = cp.Variable((n, n), symmetric=True)
         t = cp.Variable()
@@ -107,7 +102,6 @@ class Control:
             print("Skipped backup set and controller check. The backup controller is not verified!")
             return
 
-        # Assumption 1: a_m, a_J must stay positive over the parameter box
         if not (a_m_low > 0 and a_j_low > 0):
             raise Exception("Parameter bounds allow a_m <= 0 or a_J <= 0.")
 
