@@ -29,7 +29,7 @@ To run one controller, use `main_sim.py` with `--mode adaptive`, `--mode vanilla
 python quadrotor/main_sim.py --mode adaptive
 ```
 
-The simulation uses a one-second backup horizon and a 10 ms sampling period. 
+The simulation uses a 1 s backup horizon and a 10 ms sampling period. 
 
 ## Supplementary material
 
