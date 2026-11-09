@@ -6,7 +6,7 @@ Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Bu
 
 [Paper](https://arxiv.org/pdf/2607.20842) · [Figure](media/figure.pdf) · [Video](media/simulation.mp4)
 
-[![Simulation of the uncertain planar quadrotor model](media/simulation.gif)](media/simulation.mp4)
+[![Simulation of the planar quadrotor](media/simulation.gif)](media/simulation.mp4)
 
 ## Reproducing the results
 
@@ -21,7 +21,7 @@ python quadrotor/make_fig.py
 python quadrotor/animate.py
 ```
 
-Saved data are included in `quadrotor/data`. To use them, skip `collect_data.py` and run the two plotting commands. Figures are saved in `quadrotor/figures`. The animation uses the paper PDF to preserve its fonts and layout.
+Saved data are included in `quadrotor/data`. To use them, skip `collect_data.py` and run the two plotting commands. Figures are saved in `quadrotor/figures`. 
 
 To run one controller, use `main_sim.py` with `--mode adaptive`, `--mode vanilla` for the nominal bCBF, or `--mode nominal` for the primary controller alone:
 
@@ -29,7 +29,7 @@ To run one controller, use `main_sim.py` with `--mode adaptive`, `--mode vanilla
 python quadrotor/main_sim.py --mode adaptive
 ```
 
-The simulation uses κ = 10, a one-second backup horizon, and a 10 ms input holding period. The initial future-horizon QP constraints remain active; only the derivative row at prediction time zero is omitted.
+The simulation uses a one-second backup horizon and a 10 ms sampling period. 
 
 ## Supplementary material
 
