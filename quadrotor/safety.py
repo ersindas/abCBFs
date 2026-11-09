@@ -12,7 +12,6 @@ class Constraint:
     def alpha_b(self, x):
         return 10 * x + x**3
 
-    # ----------------------------- safe set ---------------------------------
     def h_x(self, x):
         return x[0] - self.px_min
 
@@ -33,9 +32,6 @@ class Constraint:
 
     @staticmethod
     def _softmin(vals, grads, kappa):
-        # numerically stable soft-min and its gradient:
-        # h = m - log(sum_i exp(-kappa (h_i - m))) / kappa, m = min_i h_i
-        # grad = sum_i w_i grad_i, w_i = softmin weights
         vals = np.asarray(vals, dtype=float)
         m = vals.min()
         w = np.exp(-kappa * (vals - m))
@@ -60,7 +56,6 @@ class Constraint:
             kappa,
         )[1]
 
-    # ---------------------------- backup set --------------------------------
     def h_vx_b(self, x):
         return x[3]
 
@@ -86,7 +81,6 @@ class Constraint:
         return np.array([0, 1, 0, 0, 0, 0])
 
     def h_theta_b(self, x):
-        # un-normalized pitch ellipsoid, keeps grad ~ O(1)
         y = np.array([x[2] - self.th_r, x[5]])
         return self.rho_th - y.T @ self.P @ y
 
@@ -114,7 +108,6 @@ class Constraint:
 class ASIF(Constraint):
     def setupASIF(self):
 
-        # backup properties (shared by vanilla and adaptive for a fair test)
         self.backupTime = 1.0
         self.del_t_b = 2 * self.del_t
         self.tspan_b = np.arange(0, self.backupTime + self.del_t_b, self.del_t_b)
@@ -123,20 +116,17 @@ class ASIF(Constraint):
         self.backup_save_N = 5
         self.mu_d = 0.0
 
-        # safety constraint
         self.kappa = 10.0
-        self.px_min = 1.0    # wall, the active constraint in this demo
-        self.pz_min = 1.0    # floor
+        self.px_min = 1.0
+        self.pz_min = 1.0
         self.theta_max = np.deg2rad(60)
 
-        # backup constraints
         self.r_x = 1.0
         self.r_z = 1.0
-        self.r_th = 0.30                       # rad^2 pitch margin
+        self.r_th = 0.30
         self.th_r = self.backupParams["th_r"]
 
     def vanilla_bCBF(self, x, u_des):
-        # bCBF-QP, nominal model, no parameter adaptation
         M = np.eye(2)
         q = u_des
 
@@ -209,17 +199,16 @@ class ASIF(Constraint):
             tic = time.perf_counter()
             soltn = quadprog.solve_qp(M, q, G.T, d, 0)
             k_star = soltn[0]
-            indicator_F = 1            # 1_F(x,t)=1: a safe u in U exists
+            indicator_F = 1
             toc = time.perf_counter()
             solverComputeTime = toc - tic
         except Exception:
             k_star = None
-            indicator_F = 0            # 1_F(x,t)=0: fall back to the backup controller
+            indicator_F = 0
             solverComputeTime = None
             if self.verbose:
                 print("no soltn (vanilla)")
 
-        # k_safe = 1_F k* + (1-1_F) k_b
         u_act = k_star if indicator_F else k_b
 
         intervening = np.linalg.norm(u_act - u_des) >= 0.0001
