@@ -9,8 +9,6 @@ import clarabel
 def error_polytope(theta_hat, rho, theta_low, theta_high):
     """Return the manuscript's symmetric 2N-row certified error box.
 
-    The estimate and prior arguments retain the existing caller interface.
-    The prior box is not intersected with the certified error box.
     """
     theta_hat, rho, theta_low, theta_high = map(
         lambda v: np.asarray(v, dtype=float),
