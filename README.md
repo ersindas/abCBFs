@@ -1,12 +1,12 @@
 # Robust Adaptive Backup Control Barrier Functions
 
-This repository contains the implementation of **Robust Adaptive Backup Control Barrier Functions**, accepted for publication in IEEE Control Systems Letters (L-CSS).
+This repository contains the implementation of **Robust Adaptive Backup Control Barrier Functions**, accepted for publication in IEEE Control Systems Letters (L-CSS), 2026.
 
 Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Burdick
 
 [Paper](https://arxiv.org/pdf/2607.20842) · [Figure](media/figure.pdf) · [Video](media/simulation.mp4)
 
-[![Simulation of the planar quadrotor](media/simulation.gif)](media/simulation.mp4)
+[![Simulation of the uncertain planar quadrotor model](media/simulation.gif)](media/simulation.mp4)
 
 ## Reproducing the results
 
