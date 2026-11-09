@@ -74,7 +74,7 @@ class Dynamics:
         self.c_x = 0.08
         self.c_z = 0.08
         self.delta_g = 0.22    # extra specific gravity the nominal model ignores
-        self.delta_m = -0.32   # Updated by experiment_config before simulation.
+        self.delta_m = -0.37
         self.delta_J = 0.008
         self.delta_l = 0.003
         self.bTheta = np.array([self.c_x, self.c_z, self.delta_g, self.delta_m, self.delta_J, self.delta_l])

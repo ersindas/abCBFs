@@ -3,7 +3,7 @@ import numpy as np
 class Estimator:
 
     def setupEstimator(self):
-        self.theta_hat_low = np.array([-0.1, -0.1, -0.25, -0.35, -0.01, -0.005])
+        self.theta_hat_low = np.array([-0.1, -0.1, -0.25, -0.37, -0.01, -0.005])
         self.theta_hat_high = np.array([0.1, 0.1, 0.25, 0.35, 0.01, 0.005])
         self.n_theta = 6
         self.theta_hat = (self.theta_hat_low + self.theta_hat_high) / 2

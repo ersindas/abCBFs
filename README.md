@@ -12,7 +12,7 @@ Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Bu
 
 The `quadrotor` folder contains the planar quadrotor example from the paper: the true and estimated dynamics, the DREM parameter estimator, the nominal and robust adaptive bCBF-QP safety filters, and the scripts used to generate the figure and animation.
 
-Use Python 3.12. Install the packages, run the simulations and checks, and generate the figure and animation:
+Use Python 3.12. Install the packages, run the simulations, and generate the figure and animation:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -29,7 +29,7 @@ To run one controller, use `main_sim.py` with `--mode adaptive`, `--mode vanilla
 python quadrotor/main_sim.py --mode adaptive
 ```
 
-The simulation uses κ = 10, a one-second backup horizon, and a 10 ms input holding period. The initial future-horizon QP constraints remain active; only the derivative row at prediction time zero is omitted. The adaptive numerical checks stop if physical safety, parameter containment, backup-flow bounds, terminal entry, or input limits fail. They do not establish a general sampled-data safety guarantee.
+The simulation uses κ = 10, a one-second backup horizon, and a 10 ms input holding period. The initial future-horizon QP constraints remain active; only the derivative row at prediction time zero is omitted.
 
 ## Supplementary material
 

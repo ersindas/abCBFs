@@ -1,4 +1,4 @@
-"""Run all three controllers and check the adaptive result."""
+"""Run all three controllers and save the data for the figure."""
 from pathlib import Path
 import argparse
 import subprocess
@@ -17,16 +17,10 @@ def main():
         subprocess.run([sys.executable, str(HERE/'main_sim.py'), '--mode', mode,
                         '--output', str(output)], check=True)
 
-    saved = output/'adaptive/continuous_candidate.npz'
-    checks = output/'verification'
-    commands = [
-        ['verify_candidate.py', str(saved), '--output', str(checks)],
-        ['verify_dense.py', '--input', str(saved), '--output', str(checks)],
-        ['check_backup.py', '--output', str(checks/'smooth_backup_certificate.json')],
-    ]
-    for script, *arguments in commands:
-        subprocess.run([sys.executable, str(HERE/'verification'/script), *arguments], check=True)
-    print(f'Saved simulation data and checks to {output}')
+    subprocess.run([sys.executable, str(HERE / 'plotting/backup_flows.py'),
+                    '--data', str(output)], check=True)
+    print(f'Saved simulation data to {output}')
+
 
 
 if __name__ == '__main__':
