@@ -10,18 +10,16 @@ Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Bu
 
 ## Reproducing the results
 
-The `quadrotor` folder contains the planar quadrotor example from the paper: the true and estimated dynamics, the DREM parameter estimator, the nominal and robust adaptive bCBF-QP safety filters, and the scripts used to generate the figure and animation.
+The `quadrotor` folder contains the planar quadrotor example from the paper: the true and estimated dynamics, the DREM parameter estimator, the nominal and robust adaptive bCBF-QP safety filters.
 
-To install the packages, run the simulations, and generate the figure and animation:
+To install the packages and run the simulations:
 
 ```bash
 python -m pip install -r requirements.txt
 python quadrotor/collect_data.py
-python quadrotor/make_fig.py
-python quadrotor/animate.py
 ```
 
-Saved data are included in `quadrotor/data`. To use them, skip `collect_data.py` and run the two plotting commands. Figures are saved in `quadrotor/figures`. 
+Saved simulation data are included in `quadrotor/data`. The final paper figure and animation are available in `media`; rerunning the simulations updates the data only.
 
 To run one controller, use `main_sim.py` with `--mode adaptive`, `--mode vanilla` for the nominal bCBF, or `--mode nominal` for the primary controller alone:
 
