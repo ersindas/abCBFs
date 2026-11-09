@@ -1,4 +1,5 @@
 numpy==2.3.5
+quadprog==0.1.13
 PyMuPDF==1.26.6
 pypdf==6.10.0
 imageio-ffmpeg==0.8.1
@@ -8,4 +9,3 @@ jaxlib==0.11.2
 cvxpy==1.9.3
 scs==3.3.1
 clarabel==0.11.1
-quadprog==0.1.13
