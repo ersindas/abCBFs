@@ -1,4 +1,4 @@
-"""Run the planar quadrotor example with the selected controller."""
+"""Run the uncertain planar quadrotor example with the selected controller."""
 from pathlib import Path
 import argparse
 import numpy as np
