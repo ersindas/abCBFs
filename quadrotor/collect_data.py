@@ -1,4 +1,3 @@
-"""Run all three controllers and save the simulation data."""
 from pathlib import Path
 import argparse
 import subprocess
