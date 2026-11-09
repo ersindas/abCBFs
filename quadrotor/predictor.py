@@ -1,9 +1,3 @@
-"""Differentiable, componentwise backup prediction certificate.
-
-Analytic bounds are conditional on the robust unsaturation guard along the
-whole prediction. Arrays evaluate its numerical approximation on the grid.
-No sampling certificate or validated integrator is implied by this module.
-"""
 from functools import partial
 import numpy as np
 import jax
