@@ -1,0 +1,15 @@
+{
+  "completed": true,
+  "minimum_dense_h": 0.061967020097435335,
+  "minimum_hbar": -0.01414041239869991,
+  "maximum_containment_excess": -1.1102230246251565e-16,
+  "backup_steps": 1,
+  "backup_intervals": [
+    [
+      0.02,
+      0.03
+    ]
+  ],
+  "minimum_feasible_qp_residual": 3.4160174688935285e-13,
+  "elapsed_seconds": 13.386570699993172
+}

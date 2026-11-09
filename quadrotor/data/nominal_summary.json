@@ -1,0 +1,12 @@
+{
+  "mode": "nominal",
+  "completed": true,
+  "minimum_dense_h": -0.09095910685941315,
+  "minimum_dense_components": [
+    0.10035073634527292,
+    -0.09095644183600493,
+    0.9611744656235983
+  ],
+  "backup_steps": 89,
+  "elapsed_seconds": 3.6020420999993803
+}

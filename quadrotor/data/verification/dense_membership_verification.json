@@ -1,0 +1,89 @@
+{
+  "input": "quadrotor/data/adaptive/continuous_candidate.npz",
+  "dense_time_dt": 0.001000000000000334,
+  "prediction_dt": 0.005,
+  "num_states": 4001,
+  "num_constraints": 202,
+  "minimum_hbar": -0.014140339680399306,
+  "minimum_hbar_time": 0.02,
+  "minimum_constraint_index": 201,
+  "minimum_terminal": -0.014140339680399306,
+  "minimum_terminal_time": 0.02,
+  "minimum_running": 0.06124909918483476,
+  "minimum_between_updates_hbar": -0.0059016349725111335,
+  "minimum_between_updates_hbar_time": 0.021,
+  "minimum_between_updates_constraint_index": 201,
+  "minimum_physical_h": 0.06196702009743534,
+  "minimum_physical_h_time": 4.0,
+  "minimum_physical_components": [
+    0.2617411431464043,
+    0.07654748214443541,
+    1.0619037226145058
+  ],
+  "maximum_moment_bound": 5.3013708556864545,
+  "maximum_parameter_error_excess": -1.1102230246251565e-16,
+  "negative_hbar_count": 3,
+  "minimum_raw_rho": 6.0659622223131264e-55,
+  "parameter_containment_tolerance": 1e-10,
+  "parameter_containment_within_tolerance": true,
+  "strictly_nonpositive_containment_excess": true,
+  "maximum_containment_excess_time": 0.011,
+  "maximum_containment_excess_component": 3,
+  "note": "All saved dense closed-loop states and 5ms prediction points checked numerically. The numerical tolerances are not a containment proof or universal intersample theorem.",
+  "verification_passed": true,
+  "failed_checks": [],
+  "checks": {
+    "parameter_containment": {
+      "passed": true,
+      "maximum_excess": -1.1102230246251565e-16,
+      "tolerance": 1e-10
+    },
+    "nonnegative_error_radii": {
+      "passed": true,
+      "minimum_radius": 1e-08
+    },
+    "ordered_parameter_prior": {
+      "passed": true
+    },
+    "truth_in_parameter_prior": {
+      "passed": true
+    },
+    "estimates_in_parameter_prior": {
+      "passed": true
+    },
+    "applied_input_bounds": {
+      "passed": true,
+      "maximum_excess": 0.0,
+      "tolerance": 1e-07
+    },
+    "dense_physical_safety": {
+      "passed": true,
+      "minimum": 0.06196702009743534,
+      "tolerance": 1e-08
+    },
+    "all_time_moment_certificate": {
+      "passed": true,
+      "maximum": 5.3013708556864545,
+      "strict_limit": 19.99999999
+    },
+    "nonnegative_raw_error_radii": {
+      "passed": true,
+      "minimum": 6.0659622223131264e-55,
+      "tolerance": 1e-10
+    },
+    "finite_audit_results": {
+      "passed": true
+    }
+  },
+  "numerical_tolerances": {
+    "safety_absolute": 1e-08,
+    "parameter_absolute": 1e-10,
+    "bound_absolute": 1e-07,
+    "bound_relative": 1e-07,
+    "input_absolute": 1e-07,
+    "prediction_absolute": 2e-06,
+    "saved_prediction_absolute": 1e-09,
+    "moment_strict_margin": 1e-08
+  },
+  "tightened_membership_policy": "Diagnostic only: temporary negative tightened membership is permitted with backup switching. Physical safety and true backup reachability remain required."
+}

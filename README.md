@@ -1,30 +1,36 @@
 # Robust Adaptive Backup Control Barrier Functions
 
-This repository contains the implementation of **Robust Adaptive Backup Control Barrier Functions**, submitted to IEEE Control Systems Letters (L-CSS), 2026.
+This repository contains the implementation of **Robust Adaptive Backup Control Barrier Functions**, accepted for publication in IEEE Control Systems Letters (L-CSS).
 
 Ersin Daş, David E. J. van Wijk, Tamas G. Molnar, Aaron D. Ames, and Joel W. Burdick
 
-Paper: https://arxiv.org/pdf/2607.20842
+[Paper](https://arxiv.org/pdf/2607.20842) · [Figure](media/figure.pdf) · [Video](media/simulation.mp4)
 
-## Prerequisites
+[![Simulation of the planar quadrotor](media/simulation.gif)](media/simulation.mp4)
 
-- Python 3.9 or later.
-- Required Python libraries:
-  - `numpy`
-  - `scipy`
-  - `jax`
-  - `cvxpy`
-  - `quadprog`
-  - `matplotlib`
+## Reproducing the results
 
-## Contents
+The `quadrotor` folder contains the planar quadrotor example from the paper: the true and estimated dynamics, the DREM parameter estimator, the nominal and robust adaptive bCBF-QP safety filters, and the scripts used to generate the figure and animation.
 
-The `quadrotor` folder contains the planar quadrotor example from the paper: the true and estimated dynamics, the DREM parameter estimator, the vanilla and robust adaptive bCBF-QP safety filters, and the scripts used to run the simulation and generate the figure.
+Use Python 3.12. Install the packages, run the simulations and checks, and generate the figure and animation:
 
-- `main_sim.py` runs a single simulation (vanilla, adaptive, or nominal, see `--mode`).
-- `collect_data.py` runs all three cases and saves the data used for the paper figure.
-- `make_fig.py` generates the figure from the saved data.
+```bash
+python -m pip install -r requirements.txt
+python quadrotor/collect_data.py
+python quadrotor/make_fig.py
+python quadrotor/animate.py
+```
+
+Saved data are included in `quadrotor/data`. To use them, skip `collect_data.py` and run the two plotting commands. Figures are saved in `quadrotor/figures`. The animation uses the paper PDF to preserve its fonts and layout.
+
+To run one controller, use `main_sim.py` with `--mode adaptive`, `--mode vanilla` for the nominal bCBF, or `--mode nominal` for the primary controller alone:
+
+```bash
+python quadrotor/main_sim.py --mode adaptive
+```
+
+The simulation uses κ = 10, a one-second backup horizon, and a 10 ms input holding period. The initial future-horizon QP constraints remain active; only the derivative row at prediction time zero is omitted. The adaptive numerical checks stop if physical safety, parameter containment, backup-flow bounds, terminal entry, or input limits fail. They do not establish a general sampled-data safety guarantee.
 
 ## Supplementary material
 
-`Supplementary Material.pdf` gives the proof that the backup controller keeps the backup set forward invariant (Proposition 1). The same conditions are checked numerically in `quadrotor/control.py`, in `checkValidBackup`.
+[Supplementary Material.pdf](Supplementary%20Material.pdf) gives the proof that the backup controller keeps the backup set forward invariant (Proposition 1). The same conditions are checked numerically in `quadrotor/control.py`, in `checkValidBackup`.
